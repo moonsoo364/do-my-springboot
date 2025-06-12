@@ -7,7 +7,6 @@ import org.example.auth.dto.AuthRequest;
 import org.example.auth.dto.AuthResponse;
 import org.example.auth.dto.CheckUserDto;
 import org.example.auth.dto.MemberDto;
-import org.example.auth.model.Member;
 import org.example.auth.service.AuthService;
 import org.example.auth.service.MemberService;
 import org.example.common.consts.ResultCode;
@@ -50,13 +49,6 @@ public class AuthController {
                         ))
                 );
     }
-//    @PostMapping("/register")
-//    public Mono<ApiResponseDto> register(@Valid @RequestBody MemberDto dto) {
-//        return memberService.registerMember(dto)
-//                .map(member -> new ApiResponseDto(ResultCode.SUCCESS, "User registered successfully!"))
-//                .onErrorResume(IllegalArgumentException.class, e ->
-//                        Mono.just(new ApiResponseDto(ResultCode.BAD_REQUEST, "check your member request")));
-//    }
 
     @GetMapping("/check/user/id")
     public Mono<CheckUserDto> checkUserId(@RequestParam(required = true) String userId){
@@ -65,39 +57,7 @@ public class AuthController {
             return Mono.just(new CheckUserDto(member));
         });
     }
-    @GetMapping("/check/user/cache")
-    public Mono<CheckUserDto> checkUserIdByCache(@RequestParam(required = true) String userId){
-        return memberService.findUserByUserIdUseCache(userId)
-                .map(CheckUserDto::new)
-                .switchIfEmpty(Mono.just(new CheckUserDto()));
-    }
-    @GetMapping("/flux/range")
-    public void parallel(){
-//        trash 쓰레드 무한 생성됨
-//        Scheduler customScheduler = Schedulers.newParallel("custom-parallel", 4); // 스레드 4개 사용
-//        Flux.range(1, 10)
-//                .parallel()
-//                .runOn(customScheduler) // 여기에서 customScheduler 사용
-//                .doOnNext(i -> {
-//                    try {
-//                        Thread.sleep(500);
-//                    } catch (InterruptedException e) {
-//                        throw new RuntimeException(e);
-//                    }
-//                    log.info("Current Index : {}", i);
-//                })
-//                .sequential()
-//                .subscribe();
-//        // thread 수동 제거
-//        customScheduler.dispose();
 
-//        Flux.range(1, 10)
-//                .parallel()
-//                .runOn(SchedulerProvider.CUSTOM_PARALLEL) // 재사용되는 스케줄러
-//                .doOnNext(i -> log.info("Current Index : {}", i))
-//                .sequential()
-//                .subscribe();
 
-    }
 
 }
