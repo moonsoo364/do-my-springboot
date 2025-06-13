@@ -1,7 +1,7 @@
 package org.example.auth.service;
 
 import org.example.auth.dao.MemberDao;
-import org.example.auth.dto.MemberDto;
+import org.example.auth.dto.model.MemberDto;
 import org.example.auth.model.Member;
 import org.example.auth.repository.MemberRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -54,6 +54,11 @@ public class MemberServiceImpl implements MemberService{
     @Override
     public Mono<MemberDto> findUserProjectionByUserId(String userId) {
         return memberDao.findUserProjectionByUserId(userId);
+    }
+
+    @Override
+    public Mono<Integer> deleteByUserId(String userId) {
+        return memberRepository.delteByUserIdReturnCount(userId);
     }
 
 }

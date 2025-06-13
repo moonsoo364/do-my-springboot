@@ -2,16 +2,13 @@ package org.example.auth.dao;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.auth.dto.CheckUserDto;
-import org.example.auth.dto.MemberDto;
+import org.example.auth.dto.model.MemberDto;
 import org.example.auth.model.Member;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.relational.core.query.Criteria;
 import org.springframework.data.relational.core.query.Query;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
-
-import java.time.LocalDateTime;
 
 @Slf4j
 @Component

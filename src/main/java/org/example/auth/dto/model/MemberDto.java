@@ -1,4 +1,4 @@
-package org.example.auth.dto;
+package org.example.auth.dto.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotBlank;

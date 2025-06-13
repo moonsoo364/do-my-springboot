@@ -1,7 +1,6 @@
 package org.example.auth.service;
 
-import org.example.auth.dto.CheckUserDto;
-import org.example.auth.dto.MemberDto;
+import org.example.auth.dto.model.MemberDto;
 import org.example.auth.model.Member;
 import reactor.core.publisher.Mono;
 
@@ -15,5 +14,7 @@ public interface MemberService {
     Mono<Member> findUserByUserId(String userId);
 
     Mono<MemberDto> findUserProjectionByUserId(String userId);
+
+    Mono<Integer> deleteByUserId(String userId);
 
 }

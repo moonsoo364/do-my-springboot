@@ -3,7 +3,7 @@ package org.example.auth.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.*;
-import org.example.auth.dto.MemberDto;
+import org.example.auth.dto.model.MemberDto;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.domain.Persistable;
@@ -16,7 +16,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 
 @Getter
@@ -47,10 +46,10 @@ public class Member implements UserDetails, Persistable<String> {
     protected LocalDateTime regDt;
 
     @Column("upd_dt")
-    protected LocalDateTime updDt;
+    private LocalDateTime updDt;
 
     @Column("locale_code")
-    protected String localeCode;
+    private String localeCode;
 
     /** Persistable<String> 관련 코드 시작 */
     @Transient

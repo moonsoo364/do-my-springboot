@@ -1,11 +1,11 @@
 package org.example.auth.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.example.auth.dto.api.DeleteUserDto;
+import org.example.auth.service.MemberService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import java.security.Principal;
@@ -15,8 +15,10 @@ import java.security.Principal;
 @RequiredArgsConstructor
 public class UserController {
 
+    private final MemberService memberService;
+
     @GetMapping("/me")
-    @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')")
+    @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE', 'SUPER_ROLE')")
     public Mono<ResponseEntity<String>> getCurrentUser(Mono<Principal> principal) {
         return principal
                 .map(Principal::getName)
@@ -25,8 +27,15 @@ public class UserController {
     }
 
     @GetMapping("/admin-only")
-    @PreAuthorize("hasAuthority('ADMIN_ROLE')")
+    @PreAuthorize("hasAnyAuthority('ADMIN_ROLE', 'SUPER_ROLE')")
     public Mono<ResponseEntity<String>> adminOnly() {
         return Mono.just(ResponseEntity.ok("This is an admin-only endpoint."));
+    }
+
+    @DeleteMapping("/id")
+    public Mono<DeleteUserDto> deleteUserId(@RequestParam(required = true) String userId){
+        return memberService.deleteByUserId(userId)
+                .map(DeleteUserDto::fromDeleteCnt
+                );
     }
 }

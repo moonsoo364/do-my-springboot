@@ -1,8 +1,8 @@
 package org.example.auth.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.auth.dto.AuthRequest;
-import org.example.auth.dto.AuthResponse;
+import org.example.auth.dto.api.AuthRequest;
+import org.example.auth.dto.api.AuthResponse;
 import org.example.auth.jwt.JwtUtil;
 import org.example.auth.repository.MemberRepository;
 import org.springframework.security.authentication.BadCredentialsException;

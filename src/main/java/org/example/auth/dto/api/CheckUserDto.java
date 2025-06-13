@@ -1,6 +1,6 @@
-package org.example.auth.dto;
+package org.example.auth.dto.api;
 
-import org.example.auth.model.Member;
+import org.example.auth.dto.model.MemberDto;
 
 public record CheckUserDto(
         String userId,
@@ -11,7 +11,5 @@ public record CheckUserDto(
     public CheckUserDto(MemberDto member){
         this(member.getUserId(), member.getMemberName(), true);
     }
-    public CheckUserDto(){
-        this(null, null, false);
-    }
+//
 }
