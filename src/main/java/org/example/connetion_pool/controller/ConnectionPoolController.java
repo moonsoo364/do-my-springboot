@@ -12,7 +12,7 @@ import reactor.netty.resources.ConnectionPoolMetrics;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth/db")
+@RequestMapping("/db")
 @RequiredArgsConstructor
 public class ConnectionPoolController {
     private final ConnectionPool connectionPool;

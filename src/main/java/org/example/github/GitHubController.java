@@ -13,7 +13,7 @@ public class GitHubController {
 
     private final GitHubAccess gitHubAccess;
 
-    @GetMapping("/auth/github/org/{organization}/repos")
+    @GetMapping("/github/org/{organization}/repos")
     public Flux<Repository> repositories(@PathVariable String organization) {
         return gitHubAccess.getReposFor(organization);
     }

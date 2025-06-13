@@ -1,17 +1,17 @@
-package org.example.common.aop;
-
-
-import lombok.extern.slf4j.Slf4j;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.example.common.dto.CommonResponse;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
-
+//package org.example.common.aop;
+//
+//
+//import lombok.extern.slf4j.Slf4j;
+//import org.aspectj.lang.ProceedingJoinPoint;
+//import org.aspectj.lang.annotation.Around;
+//import org.aspectj.lang.annotation.Aspect;
+//import org.example.common.dto.CommonResponse;
+//import org.springframework.http.ResponseEntity;
+//import org.springframework.stereotype.Component;
+//import reactor.core.publisher.Flux;
+//import reactor.core.publisher.Mono;
+//
+//// webflux 환경에서는 컨트롤러의 반환값이 Mono, Flux 래핑되기 떄문에 어려움
 //@Slf4j
 //@Aspect
 //@Component
