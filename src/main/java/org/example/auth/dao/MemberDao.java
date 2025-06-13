@@ -32,7 +32,7 @@ public class MemberDao {
         String sql = "SELECT " +
                 "user_id, " +
                 "member_name," +
-                "user_role," +
+                "role_code," +
                 "locale_code " +
                 "FROM member " +
                 "WHERE user_id = :userId";
@@ -44,7 +44,7 @@ public class MemberDao {
                             return MemberDto.builder()
                                     .userId(row.get("user_id",String.class))
                                     .memberName(row.get("member_name",String.class))
-                                    .userRole(row.get("user_role",String.class))
+                                    .roleCode(row.get("role_code",String.class))
                                     .localeCode(row.get("locale_code", String.class))
                                     .build();
                         }

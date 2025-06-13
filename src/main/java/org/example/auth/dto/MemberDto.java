@@ -22,7 +22,7 @@ public class MemberDto  {
     @NotBlank
     private String password;
 
-    private String userRole;
+    private String roleCode;
 
     private String localeCode;
 

@@ -40,8 +40,8 @@ public class Member implements UserDetails, Persistable<String> {
     @Column("password")
     private String password;
 
-    @Column("user_role")
-    private String userRole;
+    @Column("role_code")
+    private String roleCode;
 
     @Column("reg_dt")
     protected LocalDateTime regDt;
@@ -73,7 +73,7 @@ public class Member implements UserDetails, Persistable<String> {
         this.userId = dto.getUserId();
         this.password = dto.getPassword();
         this.memberName = dto.getMemberName();
-        this.userRole = dto.getUserRole();
+        this.roleCode = dto.getRoleCode();
         this.localeCode = dto.getLocaleCode();
         this.newMember = dto.isNewMember();// 명시적으로 새로운 행 추가
 
@@ -81,7 +81,7 @@ public class Member implements UserDetails, Persistable<String> {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(userRole));
+        return Collections.singletonList(new SimpleGrantedAuthority(roleCode));
     }
 
     @Override
