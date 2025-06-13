@@ -11,6 +11,8 @@ import org.example.auth.service.AuthService;
 import org.example.auth.service.MemberService;
 import org.example.common.consts.ResultCode;
 import org.example.common.dto.ApiResponseDto;
+import org.example.common.exeption.ApiResponseException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,26 +28,33 @@ public class AuthController {
     private final MemberService memberService;
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<AuthResponse>> login(@Valid @RequestBody AuthRequest authRequest){
+    public Mono<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest){
         return authService.authenticate(authRequest)
-                .map(ResponseEntity::ok)
-                .onErrorReturn(new ResponseEntity<>(HttpStatus.UNAUTHORIZED));
+                .onErrorMap(
+                        Exception.class,
+                        e-> new ApiResponseException(new ApiResponseDto(
+                                HttpStatus.UNAUTHORIZED,
+                                ResultCode.FAIL,
+                                "Fail, user login"
+                        ))
+                );
     }
 
     @PostMapping("/register")
-    public Mono<ResponseEntity<ApiResponseDto>> register(
+    public Mono<ApiResponseDto> register(
             @Valid @RequestBody MemberDto dto
             ){
         dto.setNewMember(true);
         return memberService.registerMember(dto)
-                .map(member -> ResponseEntity.status(HttpStatus.CREATED)
-                        .body(
-                                new ApiResponseDto(
-                                        ResultCode.SUCCESS,"User registered successfully!")
-                        ))
-                .onErrorResume(IllegalArgumentException.class, e-> Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                        .body(
-                                new ApiResponseDto(ResultCode.BAD_REQUEST,"check your member request")
+                .map(exists ->new ApiResponseDto(
+                        ResultCode.SUCCESS,
+                        "User registered successfully"))
+                .onErrorMap(
+                        DuplicateKeyException.class,
+                        e-> new ApiResponseException(new ApiResponseDto(
+                                HttpStatus.BAD_REQUEST,
+                                ResultCode.BAD_REQUEST,
+                                "Fail, user is duplicated"
                         ))
                 );
     }

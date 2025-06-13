@@ -29,10 +29,9 @@ public class RoleController {
     @PostMapping("")
     public Mono<ApiResponseDto> saveMemberRole(@RequestBody @Valid MemberRoleDto memberRole) {
         return roleService.saveMemberRole(new MemberRole(memberRole))
-                .hasElement()
                 .map(exists -> new ApiResponseDto(ResultCode.SUCCESS, "Success, user role is saved"))
                 .onErrorMap(DuplicateKeyException.class,
-                        ex -> new ApiResponseException(new ApiResponseDto(ResultCode.BAD_REQUEST, "Fail, user role is duplicated"))
+                        e -> new ApiResponseException(new ApiResponseDto(ResultCode.BAD_REQUEST, "Fail, user role is duplicated"))
                 );
     }
 
