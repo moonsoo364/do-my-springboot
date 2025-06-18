@@ -6,6 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.example.auth.dto.model.MemberDto;
 import org.example.auth.model.Member;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,6 +25,9 @@ public class JwtUtil {
 
     @Value("${jwt.expiration}")
     private long expirationTimeMillis;
+
+    @Value("${jwt.ref-expiration}")
+    private long refExpirationTimeMillis;
 
     private SecretKey key;
 
@@ -56,7 +60,7 @@ public class JwtUtil {
         return expiration.isBefore(Instant.now());
     }
 
-    public String generateToken(Member member) {
+    public String generateToken(MemberDto member) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roleCode", member.getRoleCode());
         claims.put("localeCode", member.getLocaleCode());

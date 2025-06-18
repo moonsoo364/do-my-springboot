@@ -26,5 +26,15 @@ public class RedisConfig {
 
         return new ReactiveRedisTemplate<>(redisConnectionFactory, context);
     }
+
+    //jwt 리프래시 토큰 저장 키 페어
+    @Bean(name = "refreshTokenTemplate")
+    public ReactiveRedisTemplate<String, String> refreshTokenTemplate(){
+        RedisSerializationContext<String, String> context =
+                RedisSerializationContext.<String, String>newSerializationContext(new StringRedisSerializer())
+                        .value(new Jackson2JsonRedisSerializer<>(String.class))
+                        .build();
+        return new ReactiveRedisTemplate<>(redisConnectionFactory,context);
+    }
 }
 

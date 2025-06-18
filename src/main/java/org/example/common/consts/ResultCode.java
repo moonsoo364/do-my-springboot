@@ -7,4 +7,5 @@ public class ResultCode {
 
     // 40000번 : httpstatus 400번 대 코드
     public static final int BAD_REQUEST = 40000;
+    public static final int UNAUTHORIZED = 40001;
 }

@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.example.auth.model.Member;
 
 @Data
 @Builder
@@ -28,5 +29,16 @@ public class MemberDto  {
 
     @JsonIgnore
     private boolean newMember;
+
+    @JsonIgnore
+    private String tokenType;
+
+    @JsonIgnore
+    public MemberDto (Member member, String tokenType){
+        this.memberName = member.getMemberName();
+        this.userId = member.getUserId();
+        this.localeCode = member.getLocaleCode();
+        this.roleCode = member.getRoleCode();
+    }
 
 }
