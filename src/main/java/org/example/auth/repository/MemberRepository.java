@@ -11,5 +11,5 @@ public interface MemberRepository extends ReactiveCrudRepository<Member,String> 
 
     @Modifying
     @Query("DELETE FROM member WHERE user_id = :userId")
-    Mono<Integer> delteByUserIdReturnCount(String userId);
+    Mono<Integer> deleteByUserIdReturnCount(String userId);
 }

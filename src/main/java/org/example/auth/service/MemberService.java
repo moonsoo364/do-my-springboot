@@ -17,4 +17,5 @@ public interface MemberService {
 
     Mono<Integer> deleteByUserId(String userId);
 
+    Mono<MemberDto> findUserByUserIdUseCache(String userId);
 }

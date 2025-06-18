@@ -15,6 +15,19 @@ spring:
       max-idle-time: 1m # 커넥션이 풀에서 유휴 상태(아무 작업 없이 놀고 있는 상태)로 유지될 수 있는 최대 시간입니다. 이 시간이 지나면 해당 커넥션은 종료되고 풀에서 제거되어 자원 낭비를 줄입니다. 이 값은 max-life-time보다 작아야 합니다.
       max-create-connection-time: 1m #커넥션 생성 최대 허용 시간
       max-life-time: 2m #각 커넥션의 최대 생존 시간을 의미합니다. 이 시간이 지나면 커넥션이 아직 사용 중이더라도 해당 커넥션은 풀에서 제거되고 새 커넥션으로 대체됩니다.
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ${REDIS_PW}
+      cache-time: 15 #앱 설정 값, 데이터 캐시할 시간 분단위
+      lettuce:
+        pool:
+          enabled: true
+          max-active: 10     # 동시에 사용할 수 있는 최대 커넥션 수
+          max-idle: 10       # 유휴 상태로 유지할 최대 커넥션 수
+          min-idle: 1        # 최소 유휴 커넥션 수
+          max-wait: 5s       # 커넥션을 얻기까지 기다릴 최대 시간
 server:
   port: 8080
 
