@@ -1,5 +1,6 @@
 package org.example.auth.service;
 
+import lombok.RequiredArgsConstructor;
 import org.example.auth.dao.MemberDao;
 import org.example.auth.dto.model.MemberDto;
 import org.example.auth.model.Member;
@@ -14,25 +15,16 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 
 @Service
+@RequiredArgsConstructor
 public class MemberServiceImpl implements MemberService{
     private final MemberRepository memberRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final MemberDao memberDao;
-    private final ReactiveRedisTemplate<String,MemberDto> redisTemplate;
-    private final Integer cacheTime;
 
-    public MemberServiceImpl(
-            MemberRepository memberRepository,
-            PasswordEncoder passwordEncoder,
-            MemberDao memberDao,
-            @Qualifier("redisMemberCache") ReactiveRedisTemplate<String, MemberDto> redisTemplate,
-            @Value("${spring.data.redis.cache-time}") Integer cacheTime) {
-        this.memberRepository = memberRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.memberDao = memberDao;
-        this.redisTemplate = redisTemplate;
-        this.cacheTime = cacheTime;
-    }
+    private final PasswordEncoder passwordEncoder;
+
+    private final MemberDao memberDao;
+
+    private final MemberCacheService memberCacheService;
+
 
     @Override
     public Mono<Member> registerMember(MemberDto dto){
@@ -68,15 +60,34 @@ public class MemberServiceImpl implements MemberService{
     }
 
     //마리아 디비 1회 조회 후 레디스 캐시
+//    @Override
+//    public Mono<MemberDto> findUserByUserIdUseCache(String userId) {
+//        return redisTemplate.opsForValue().get(userId)
+//                .switchIfEmpty(
+//                        memberDao.findUserProjectionByUserId(userId)
+//                                .flatMap(member -> {
+//                                            if(member == null) return Mono.empty();// null cache 방지
+//                                            return redisTemplate.opsForValue()
+//                                                    .set(userId, member, Duration.ofMinutes(cacheTime))
+//                                                    .thenReturn(member);
+//                                        }
+//
+//                                ).onErrorResume(e ->
+//                                {
+//                                    return memberDao.findUserProjectionByUserId(userId);
+//                                })
+//
+//                );
+//    }
+
     @Override
-    public Mono<MemberDto> findUserByUserIdUseCache(String userId) {
-        return redisTemplate.opsForValue().get(userId)
+    public Mono<MemberDto> findUserByUserIdUseCache_2(String userId) {
+        return memberCacheService.getMember(userId)
                 .switchIfEmpty(
                         memberDao.findUserProjectionByUserId(userId)
                                 .flatMap(member -> {
                                             if(member == null) return Mono.empty();// null cache 방지
-                                            return redisTemplate.opsForValue()
-                                                    .set(userId, member, Duration.ofMinutes(cacheTime))
+                                            return memberCacheService.saveMember(member)
                                                     .thenReturn(member);
                                         }
 

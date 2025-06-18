@@ -8,6 +8,7 @@ import org.example.auth.dto.api.AuthResponse;
 import org.example.auth.dto.api.CheckUserDto;
 import org.example.auth.dto.model.MemberDto;
 import org.example.auth.service.AuthService;
+import org.example.auth.service.MemberCacheService;
 import org.example.auth.service.MemberService;
 import org.example.common.consts.ResultCode;
 import org.example.common.dto.ApiResponseDto;
@@ -26,6 +27,7 @@ public class AuthController {
 
     private final AuthService authService;
     private final MemberService memberService;
+    private final MemberCacheService memberCacheService;
 
     @PostMapping("/login")
     public Mono<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest){
@@ -66,6 +68,16 @@ public class AuthController {
         return memberService.findUserProjectionByUserId(userId).flatMap(
                 member -> {
             return Mono.just(new CheckUserDto(member));
+        });
+    }
+
+    @DeleteMapping("/user/session")
+    public Mono<ApiResponseDto> deleteSession(@RequestParam(required = true) String userId){
+        return memberCacheService.deleteMember(userId).map(result ->{
+            if(result){
+                return new ApiResponseDto(ResultCode.SUCCESS,"User session is deleted");
+            }
+            return new ApiResponseDto(ResultCode.FAIL,"User session not found or already deleted");
         });
     }
 
