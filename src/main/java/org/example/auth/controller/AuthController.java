@@ -49,14 +49,16 @@ public class AuthController {
                 .map(exists ->new ApiResponseDto(
                         ResultCode.SUCCESS,
                         "User registered successfully"))
-                .onErrorMap(
-                        DuplicateKeyException.class,
-                        e-> new ApiResponseException(new ApiResponseDto(
+                .onErrorMap( e->{
+                    if(e instanceof IllegalArgumentException
+                        || e instanceof  DuplicateKeyException){
+                        return new ApiResponseException(new ApiResponseDto(
                                 HttpStatus.BAD_REQUEST,
                                 ResultCode.BAD_REQUEST,
-                                "Fail, user is duplicated"
-                        ))
-                );
+                                "Fail userId already exists"));
+                    }
+                    return new ApiResponseException(new ApiResponseDto());
+                });
     }
 
     @GetMapping("/check/user/id")

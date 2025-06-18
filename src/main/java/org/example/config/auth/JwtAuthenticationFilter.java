@@ -1,12 +1,20 @@
 package org.example.config.auth;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.ExpiredJwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.auth.dao.MemberDao;
 import org.example.auth.jwt.JwtUtil;
 import org.example.auth.model.Member;
 import org.example.auth.service.MemberService;
+import org.example.common.consts.ResultCode;
+import org.example.common.dto.ApiResponseDto;
+import org.example.common.exeption.ApiResponseException;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
@@ -17,6 +25,8 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
+
+import java.rmi.server.ExportException;
 
 @Component
 @Slf4j
@@ -53,6 +63,26 @@ public class JwtAuthenticationFilter implements WebFilter {
 
                     }
                     return chain.filter(exchange);
-                }));
+                }))
+                .onErrorResume(ExpiredJwtException.class, e -> {
+                    log.warn("JWT expired: {}", e.getMessage());
+                    exchange.getResponse().setStatusCode(HttpStatus.BAD_REQUEST);
+                    exchange.getResponse().getHeaders().add("Content-Type", "application/json");
+
+                    ApiResponseDto response = new ApiResponseDto(
+                            HttpStatus.BAD_REQUEST,
+                            ResultCode.BAD_REQUEST,
+                            "Login session is expired, login please"
+                    );
+
+                    byte[] bytes = null;
+                    try {
+                        bytes = new ObjectMapper().writeValueAsBytes(response);
+                    } catch (JsonProcessingException ex) {
+                        throw new RuntimeException(ex);
+                    }
+                    DataBuffer buffer = exchange.getResponse().bufferFactory().wrap(bytes);
+                    return exchange.getResponse().writeWith(Mono.just(buffer));
+                });
         }
 }

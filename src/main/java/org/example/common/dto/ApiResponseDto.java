@@ -17,10 +17,12 @@ public class ApiResponseDto {
     private String resultMsg;
 
     public ApiResponseDto(){
+        this.httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
         resultCode = ResultCode.FAIL;
         resultMsg = "Unexpected error";
     }
 
+    //HttpStatus == 200, 성공 처리 생성자
     public ApiResponseDto(int resultCode, String resultMsg){
         this.resultCode = resultCode;
         this.resultMsg = resultMsg;

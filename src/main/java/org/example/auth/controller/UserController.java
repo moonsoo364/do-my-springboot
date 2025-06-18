@@ -33,6 +33,7 @@ public class UserController {
     }
 
     @DeleteMapping("/id")
+    @PreAuthorize("hasAnyAuthority('ADMIN_ROLE', 'SUPER_ROLE')")
     public Mono<DeleteUserDto> deleteUserId(@RequestParam(required = true) String userId){
         return memberService.deleteByUserId(userId)
                 .map(DeleteUserDto::fromDeleteCnt
