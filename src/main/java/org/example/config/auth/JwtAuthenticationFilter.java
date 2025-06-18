@@ -50,7 +50,7 @@ public class JwtAuthenticationFilter implements WebFilter {
                         String token = authHeader.substring(7);
                         String userId = jwtUtil.getUsernameFromToken(token);
 
-                        return memberService.findUserProjectionByUserId(userId)
+                        return memberService.findUserByUserIdUseCache(userId)
                                 .filter(user -> jwtUtil.validateToken(token, userId))
                                 .map(Member::new)
                                 .flatMap(user -> {
