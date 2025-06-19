@@ -41,9 +41,9 @@ public class AuthController {
             ServerHttpRequest serverRequest,      // ✅ 이름 중복 피함
             ServerHttpResponse serverResponse
     ) {
-        RegisterRefreshTokenDto refDto = authService.extractDeviceInfo(serverRequest);
+        String platformType = authService.extractDeviceInfo(serverRequest);
 
-        return authService.authenticate(authRequest, refDto)
+        return authService.authenticate(authRequest, platformType)
                 .flatMap(auth -> {
                     ResponseCookie cookie = ResponseCookie
                             .from("refreshToken", auth.refToken())

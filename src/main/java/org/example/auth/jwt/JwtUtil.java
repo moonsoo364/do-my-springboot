@@ -68,12 +68,12 @@ public class JwtUtil {
     }
 
 
-    public String generateToken(MemberDto member, RegisterRefreshTokenDto dto) {
+    public String generateToken(MemberDto member, String platformType) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("roleCode", member.getRoleCode());
         claims.put("localeCode", member.getLocaleCode());
         claims.put("memberName",member.getMemberName());
-        claims.put("platformType", dto.getPlatformType());
+        claims.put("platformType", platformType);
 
         return doGenerateRefToken(claims, member.getUserId());
     }

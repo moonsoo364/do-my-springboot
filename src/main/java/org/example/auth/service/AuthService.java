@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 public interface AuthService {
 
-    public Mono<AuthResponse> authenticate(AuthRequest authRequest, RegisterRefreshTokenDto refDto);
+    public Mono<AuthResponse> authenticate(AuthRequest authRequest, String refDto);
 
-    public RegisterRefreshTokenDto extractDeviceInfo(ServerHttpRequest request);
+    public String extractDeviceInfo(ServerHttpRequest request);
 }

@@ -5,5 +5,5 @@ spring:
     password: ${MAP_APP_PW}
 jwt:
   secret: ${ENC_KEY}
-  expiration: 2 #150000 jwt 만료시간
-  ref-expiration: 10 # 1050000 리프레쉬 토큰 만료 시간
+  expiration: 150000 #150000 jwt 만료시간
+  ref-expiration: 1050000 # 1050000 리프레쉬 토큰 만료 시간

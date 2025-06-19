@@ -11,6 +11,6 @@ import java.time.Duration;
 @NoArgsConstructor
 public class RefreshTokenDto {
     private String userId;
+    private String platformType;
     private String refreshToken;
-    private Duration duration;
 }

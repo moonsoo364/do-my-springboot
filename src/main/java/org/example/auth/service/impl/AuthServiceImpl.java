@@ -3,11 +3,13 @@ package org.example.auth.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.example.auth.dto.api.AuthRequest;
 import org.example.auth.dto.api.AuthResponse;
+import org.example.auth.dto.api.RefreshTokenDto;
 import org.example.auth.dto.api.RegisterRefreshTokenDto;
 import org.example.auth.dto.model.MemberDto;
 import org.example.auth.jwt.JwtUtil;
 import org.example.auth.repository.MemberRepository;
 import org.example.auth.service.AuthService;
+import org.example.auth.service.RefreshTokenService;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -21,9 +23,10 @@ public class AuthServiceImpl implements AuthService {
     private final MemberRepository memberRepository;
     private final JwtUtil jwtUtil;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenService refreshTokenService;
 
     @Override
-    public Mono<AuthResponse> authenticate(AuthRequest authRequest, RegisterRefreshTokenDto refDto) {
+    public Mono<AuthResponse> authenticate(AuthRequest authRequest, String platformType) {
         return memberRepository.findByUserId(authRequest.userId())
                 .filter(member -> passwordEncoder.matches(
                         authRequest.password(),
@@ -31,7 +34,8 @@ public class AuthServiceImpl implements AuthService {
                 .map(member -> {
                     MemberDto memberDto = new MemberDto(member);
                     String accessToken = jwtUtil.generateToken(memberDto);
-                    String refToken = jwtUtil.generateToken(memberDto, refDto);
+                    String refToken = jwtUtil.generateToken(memberDto, platformType);
+                    refreshTokenService.saveRefreshToken(new RefreshTokenDto(member.getUserId(),refToken,platformType));
 
                     return AuthResponse.builder()
                             .token(accessToken)
@@ -43,7 +47,8 @@ public class AuthServiceImpl implements AuthService {
                 .switchIfEmpty(Mono.error(new BadCredentialsException("InValid credentials")));
     }
 
-    public RegisterRefreshTokenDto extractDeviceInfo(ServerHttpRequest request) {
+    @Override
+    public String extractDeviceInfo(ServerHttpRequest request) {
         String userAgent = request.getHeaders().getFirst("User-Agent");
 
         String platformType = "PC";
@@ -57,6 +62,6 @@ public class AuthServiceImpl implements AuthService {
             }
         }
 
-        return new RegisterRefreshTokenDto(platformType);
+        return platformType;
     }
 }
