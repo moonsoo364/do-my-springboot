@@ -3,13 +3,9 @@ package org.example.auth.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.auth.dto.api.AuthRequest;
-import org.example.auth.dto.api.AuthResponse;
-import org.example.auth.dto.api.CheckUserDto;
-import org.example.auth.dto.api.RefreshTokenDto;
+import org.example.auth.dto.api.*;
 import org.example.auth.dto.model.MemberDto;
 import org.example.auth.jwt.JwtUtil;
-import org.example.auth.model.Member;
 import org.example.auth.service.AuthService;
 import org.example.auth.service.MemberCacheService;
 import org.example.auth.service.MemberService;
@@ -19,9 +15,13 @@ import org.example.common.dto.ApiResponseDto;
 import org.example.common.exeption.ApiResponseException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ResponseCookie;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
+
+import java.time.Duration;
 
 @Slf4j
 @RestController
@@ -36,17 +36,36 @@ public class AuthController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/login")
-    public Mono<AuthResponse> login(@Valid @RequestBody AuthRequest authRequest){
-        return authService.authenticate(authRequest)
-                .onErrorMap(
-                        Exception.class,
-                        e-> new ApiResponseException(new ApiResponseDto(
+    public Mono<AuthResponse> login(
+            @Valid @RequestBody AuthRequest authRequest,
+            ServerHttpRequest serverRequest,      // ✅ 이름 중복 피함
+            ServerHttpResponse serverResponse
+    ) {
+        RegisterRefreshTokenDto refDto = authService.extractDeviceInfo(serverRequest);
+
+        return authService.authenticate(authRequest, refDto)
+                .flatMap(auth -> {
+                    ResponseCookie cookie = ResponseCookie
+                            .from("refreshToken", auth.refToken())
+                            .httpOnly(true)
+                            .sameSite("Strict")
+                            .maxAge(Duration.ofDays(1))
+                            .path("/")
+                            .build();
+
+                    serverResponse.addCookie(cookie);
+
+                    return Mono.just(auth); // 이건 그대로 반환하면 AccessToken 포함된 JSON 본문
+                })
+                .onErrorMap(Exception.class, e ->
+                        new ApiResponseException(new ApiResponseDto(
                                 HttpStatus.UNAUTHORIZED,
                                 ResultCode.FAIL,
                                 "Fail, user login"
                         ))
                 );
     }
+
 
     @PostMapping("/register")
     public Mono<ApiResponseDto> register(
@@ -106,7 +125,11 @@ public class AuthController {
                     return memberService.findUserByUserIdUseCache_2(userId)
                             .map(dto -> {
                                     String newAccess = jwtUtil.generateToken(dto);
-                                    return new AuthResponse(newAccess,dto.getUserId(),dto.getLocaleCode());
+                                    return AuthResponse.builder()
+                                            .token(newAccess)
+                                            .memberName(dto.getMemberName())
+                                            .localeCode(dto.getLocaleCode())
+                                            .build();
                             });
 
                 });

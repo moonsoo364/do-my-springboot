@@ -1,0 +1,13 @@
+package org.example.auth.dto.api;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class RegisterRefreshTokenDto {
+    private String deviceName;//접속 기기 명
+    private String platformType;// PC, Mobile 구분
+}

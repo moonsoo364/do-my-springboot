@@ -6,10 +6,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.example.auth.dto.api.RegisterRefreshTokenDto;
 import org.example.auth.dto.model.MemberDto;
-import org.example.auth.model.Member;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
@@ -68,9 +67,33 @@ public class JwtUtil {
         return doGenerateToken(claims, member.getUserId());
     }
 
+
+    public String generateToken(MemberDto member, RegisterRefreshTokenDto dto) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("roleCode", member.getRoleCode());
+        claims.put("localeCode", member.getLocaleCode());
+        claims.put("memberName",member.getMemberName());
+        claims.put("platformType", dto.getPlatformType());
+
+        return doGenerateRefToken(claims, member.getUserId());
+    }
+
     private String doGenerateToken(Map<String, Object> claims, String userId) {
         final Instant createdDate = Instant.now();
         final Instant expirationDate = createdDate.plusMillis(expirationTimeMillis);
+
+        return Jwts.builder()
+                .claims(claims)
+                .subject(userId)
+                .issuedAt(Date.from(createdDate))
+                .expiration(Date.from(expirationDate))
+                .signWith(key)
+                .compact();
+    }
+
+    private String doGenerateRefToken(Map<String, Object> claims, String userId) {
+        final Instant createdDate = Instant.now();
+        final Instant expirationDate = createdDate.plusMillis(refExpirationTimeMillis);
 
         return Jwts.builder()
                 .claims(claims)
